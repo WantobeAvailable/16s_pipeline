@@ -1,0 +1,173 @@
+#!/bin/bash
+#This batch aims to merge pair-end sequences and checke their quality with Usearch.
+set -euxo pipefail
+cd $(dirname `readlink -f $0`)
+CONFIG_FILE=${CONFIG_FILE:-configuration_integrated.txt}
+get_config(){
+	grep -w "^$1" "${CONFIG_FILE}" | cut -d "=" -f 2
+}
+
+#Creat the output files and enter the directory where you work.
+work_dir=${PWD}
+echo ${work_dir}
+prefix=`get_config prefix`
+echo ${prefix}
+usearch_command=`get_config usearch_command`
+input_seq=${work_dir}/${prefix}_seq
+Usearch_dir=${work_dir}/${prefix}_USEARCH
+output_file=${work_dir}/${prefix}_merged
+output_info=${Usearch_dir}/${prefix}_fastq_info
+output_eestats=${Usearch_dir}/${prefix}_fastq_eestats
+output_eestats2=${Usearch_dir}/${prefix}_fastq_eestats2
+
+echo "#============ This script is going to output these files ..."
+echo	
+echo ${prefix}_merged/"	a directory including the merged sequences"
+echo ${prefix}_USEARCH/"a directory including the infomation of using the Usearch software"
+echo
+echo "#============ running batch ..."
+
+cd ${work_dir}
+
+if [ ! -d ${output_file} ]
+then
+	mkdir ${output_file}
+else
+	rm -r ${output_file}
+	mkdir ${output_file}
+fi
+
+if [ ! -d ${Usearch_dir} ]
+then
+	mkdir ${Usearch_dir}
+else
+	rm -r ${Usearch_dir}
+	mkdir ${Usearch_dir}
+fi
+
+if [ -d ${input_seq}_cp ];then
+        rm -rf ${input_seq}_cp
+fi
+
+# 支持输入：*_1.fq.gz / *_2.fq.gz（也兼容 *_1.fastq.gz / *_2.fastq.gz、未压缩fq/fastq）
+# 说明：当前 usearch 版本对 .gz 直接读取不稳定，合并时采用“按样本临时解压”方式。
+cp -r ${input_seq} ${input_seq}_cp
+cd ${input_seq}_cp
+
+# Merging paired-end sequences
+tmp_unzip_dir="${input_seq}_cp_tmp_unzip"
+rm -rf "${tmp_unzip_dir}"
+mkdir -p "${tmp_unzip_dir}"
+shopt -s nullglob
+
+r1_files=(
+	*_1.primer.fq.gz
+	*_1.primer.fastq.gz
+	*_1.primer.fq
+	*_1.primer.fastq
+	*_1.fq.gz
+	*_1.fastq.gz
+	*_1.fq
+	*_1.fastq
+)
+
+if [ ${#r1_files[@]} -eq 0 ]; then
+	echo "ERROR: No R1 files found in ${input_seq}_cp. Expected *_1.fq.gz, *_1.fastq.gz, *_1.primer.fq.gz, or uncompressed fq/fastq."
+	exit 1
+fi
+
+for r1 in "${r1_files[@]}" ; do
+	r2="${r1/_1./_2.}"
+	[ -e "${r2}" ] || { echo "Missing mate file for ${r1}: ${r2}"; exit 1; }
+
+	sample_name=$(basename "${r1}")
+	sample_name=${sample_name%%_1.primer.fq.gz}
+	sample_name=${sample_name%%_1.primer.fastq.gz}
+	sample_name=${sample_name%%_1.primer.fq}
+	sample_name=${sample_name%%_1.primer.fastq}
+	sample_name=${sample_name%%_1.fq.gz}
+	sample_name=${sample_name%%_1.fastq.gz}
+	sample_name=${sample_name%%_1.fq}
+	sample_name=${sample_name%%_1.fastq}
+
+	if [[ "${r1}" == *.gz ]]; then
+		gzip -t "${r1}"
+		gzip -t "${r2}"
+		r1_in="${tmp_unzip_dir}/${sample_name}_R1.fq"
+		r2_in="${tmp_unzip_dir}/${sample_name}_R2.fq"
+		gunzip -c "${r1}" > "${r1_in}"
+		gunzip -c "${r2}" > "${r2_in}"
+	else
+		r1_in="${r1}"
+		r2_in="${r2}"
+	fi
+
+	${usearch_command} -fastq_mergepairs "${r1_in}" -reverse "${r2_in}" -fastqout "${output_file}/${sample_name}.MG.fq"
+
+	if [[ "${r1}" == *.gz ]]; then
+		rm -f "${r1_in}" "${r2_in}"
+	fi
+done
+shopt -u nullglob
+
+rm -rf "${tmp_unzip_dir}"
+
+cd ${output_file}
+
+cd ${work_dir}
+rm -r ${input_seq}_cp
+
+################################################################################
+#Check the quality of each sample
+if [ ! -d ${output_info} ]
+then
+        mkdir ${output_info}
+else
+        rm -r ${output_info}
+        mkdir ${output_info}
+fi
+	
+for seq in ${output_file}/*
+do
+	[ -e "${seq}" ] || continue
+	base=$(basename "${seq}")
+	name="${base%.MG.fq}"
+	${usearch_command} -fastx_info ${seq} -output ${output_info}/${name}_info.log
+done
+
+################################################################################
+#The reports of statistics on quality scores and expected errors of each sample.
+if [ ! -d ${output_eestats} ];then
+	mkdir ${output_eestats}
+else
+	rm -rf ${output_eestats}
+	mkdir ${output_eestats}
+fi
+
+for seq in ${output_file}/*
+do
+	[ -e "${seq}" ] || continue
+	base=$(basename "${seq}")
+	name="${base%.MG.fq}"
+	${usearch_command} -fastq_eestats ${seq} -output ${output_eestats}/${name}_eestats.log
+done
+
+################################################################################
+#creates a summary report showing how many reads will pass an expected error 
+#filter at different length thresholds. 
+if [ ! -d ${output_eestats2} ];then
+        mkdir ${output_eestats2}
+else
+        rm -rf ${output_eestats2}
+        mkdir ${output_eestats2}
+fi
+
+for seq in ${output_file}/*
+do
+	[ -e "${seq}" ] || continue
+	base=$(basename "${seq}")
+	name="${base%.MG.fq}"
+	${usearch_command} -fastq_eestats2 ${seq} -output ${output_eestats2}/${name}_eestats2.log -length_cutoffs "50,*,50" -ee_cutoffs 0.5,1.0,2.0
+done
+
+exit 0

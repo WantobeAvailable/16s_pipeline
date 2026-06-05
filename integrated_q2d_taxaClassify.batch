@@ -1,0 +1,90 @@
+#!/bin/bash
+# Annotate DADA2 and UNOISE3 feature tables with both SILVA+NB and Greengenes2.
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+CPU=`get_config CPU`
+classifier=`get_config classifier`
+taxonomy_ref=`get_config taxonomy_ref`
+backbone=`get_config backbone`
+prefix=`get_config prefix`
+region=`get_config region`
+metadata_file=`get_config metadata_file`
+
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+
+if [ ! -f ${classifier} ]; then
+    mkdir -p ref_data
+    cd ref_data/
+    wget -c --no-check-certificate https://data.qiime2.org/2022.2/common/silva-138-99-515-806-nb-classifier.qza
+    cd "${WORK_DIR}"
+fi
+
+if [ ! -f ${taxonomy_ref} ]; then
+    wget http://ftp.microbio.me/greengenes_release/2022.10/2022.10.taxonomy.asv.nwk.qza
+fi
+
+if [[ "$region" == "V3V4" && ! -f ${backbone} ]]; then
+    wget http://ftp.microbio.me/greengenes_release/2022.10/2022.10.backbone.full-length.fna.qza
+fi
+
+for tab_prefix in ${prefix_dada2} ${prefix_unoise3}; do
+    input_table="${tab_prefix}_tab.qza"
+    input_repseq="${tab_prefix}_rep.qza"
+
+    cp -f ${input_table} ${tab_prefix}_tab_silva.qza
+    cp -f ${input_repseq} ${tab_prefix}_rep_silva.qza
+
+    qiime feature-classifier classify-sklearn \
+        --p-n-jobs ${CPU} \
+        --verbose \
+        --i-classifier ${classifier} \
+        --i-reads ${tab_prefix}_rep_silva.qza \
+        --o-classification ${tab_prefix}_tax_silva.qza
+
+    qiime metadata tabulate \
+        --m-input-file ${tab_prefix}_tax_silva.qza \
+        --o-visualization ${tab_prefix}_tax_silva.qzv
+
+    qiime taxa barplot \
+        --i-table ${tab_prefix}_tab_silva.qza \
+        --i-taxonomy ${tab_prefix}_tax_silva.qza \
+        --m-metadata-file ${metadata_file} \
+        --o-visualization ${tab_prefix}_tax_silva_plots.qzv
+
+    if [[ "$region" == "V3V4" ]]; then
+        qiime greengenes2 non-v4-16s \
+            --i-table ${input_table} \
+            --i-sequences ${input_repseq} \
+            --i-backbone ${backbone} \
+            --o-mapped-table ${tab_prefix}_tab_gg2.qza \
+            --o-representatives ${tab_prefix}_rep_gg2.qza
+    elif [[ "$region" == "V4" ]]; then
+        qiime greengenes2 filter-features \
+            --i-feature-table ${input_table} \
+            --i-reference ${taxonomy_ref} \
+            --o-filtered-feature-table ${tab_prefix}_tab_gg2.qza
+        cp -f ${input_repseq} ${tab_prefix}_rep_gg2.qza
+    else
+        echo "ERROR: Unknown region in ${CONFIG_FILE}: ${region}"
+        exit 1
+    fi
+
+    qiime greengenes2 taxonomy-from-table \
+        --i-reference-taxonomy ${taxonomy_ref} \
+        --i-table ${tab_prefix}_tab_gg2.qza \
+        --o-classification ${tab_prefix}_tax_gg2.qza
+
+    qiime metadata tabulate \
+        --m-input-file ${tab_prefix}_tax_gg2.qza \
+        --o-visualization ${tab_prefix}_tax_gg2.qzv
+
+    qiime taxa barplot \
+        --i-table ${tab_prefix}_tab_gg2.qza \
+        --i-taxonomy ${tab_prefix}_tax_gg2.qza \
+        --m-metadata-file ${metadata_file} \
+        --o-visualization ${tab_prefix}_tax_gg2_plots.qzv
+done
+
+exit 0

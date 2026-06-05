@@ -1,0 +1,29 @@
+#!/bin/bash
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+prefix=`get_config prefix`
+min_samples=`get_config min_samples`
+min_frequency=`get_config min_frequency`
+metadata_file=`get_config metadata_file`
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+
+for method_prefix in ${prefix_dada2} ${prefix_unoise3}; do
+    for db in silva gg2; do
+        tab="${method_prefix}_tab_${db}_pk"
+
+        qiime feature-table filter-features \
+            --i-table ${tab}.qza \
+            --p-min-frequency ${min_frequency} \
+            --p-min-samples ${min_samples} \
+            --o-filtered-table ${tab}_filtered.qza
+
+        qiime feature-table summarize \
+            --i-table ${tab}_filtered.qza \
+            --m-sample-metadata-file ${metadata_file} \
+            --o-visualization ${tab}_filtered.qzv
+    done
+done
+
+exit 0

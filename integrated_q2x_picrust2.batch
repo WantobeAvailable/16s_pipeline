@@ -1,0 +1,79 @@
+#!/bin/bash
+# Run PICRUSt2 functional prediction for each denoising branch.
+# SILVA taxonomy is used only to remove mitochondria/chloroplast/non-target features.
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+prefix=`get_config prefix`
+CPU=`get_config CPU`
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+output_root="PICRUSt2"
+
+mkdir -p "${output_root}"
+
+run_picrust2_branch(){
+    method_prefix=$1
+    branch_prefix="${method_prefix}"
+    table_qza="${method_prefix}_tab_silva_pk.qza"
+    rep_qza="${method_prefix}_rep_silva_pk.qza"
+    branch_dir="${output_root}/${branch_prefix}"
+    export_dir="${branch_dir}/export"
+    logs_dir="${branch_dir}/logs"
+    picrust2_dir="${branch_dir}/picrust2_out"
+
+    if [ ! -f "${table_qza}" ]; then
+        echo "ERROR: Missing PICRUSt2 input table: ${table_qza}"
+        exit 1
+    fi
+    if [ ! -f "${rep_qza}" ]; then
+        echo "ERROR: Missing PICRUSt2 input representative sequences: ${rep_qza}"
+        exit 1
+    fi
+
+    rm -rf "${branch_dir}"
+    mkdir -p "${export_dir}" "${logs_dir}" "${branch_dir}/KO" "${branch_dir}/EC" "${branch_dir}/pathway"
+
+    qiime tools export \
+        --input-path "${table_qza}" \
+        --output-path "${export_dir}/table"
+
+    qiime tools export \
+        --input-path "${rep_qza}" \
+        --output-path "${export_dir}/rep-seqs"
+
+    table_biom="${export_dir}/table/feature-table.biom"
+    rep_fasta="${export_dir}/rep-seqs/dna-sequences.fasta"
+
+    if [ ! -f "${table_biom}" ]; then
+        echo "ERROR: Exported BIOM table not found: ${table_biom}"
+        exit 1
+    fi
+    if [ ! -f "${rep_fasta}" ]; then
+        echo "ERROR: Exported representative FASTA not found: ${rep_fasta}"
+        exit 1
+    fi
+
+    conda run -n picrust2_env picrust2_pipeline.py \
+        -s "${rep_fasta}" \
+        -i "${table_biom}" \
+        -o "${picrust2_dir}" \
+        -p "${CPU}" \
+        > "${logs_dir}/picrust2_pipeline.log" \
+        2> "${logs_dir}/picrust2_pipeline.err"
+
+    if [ -d "${picrust2_dir}/KO_metagenome_out" ]; then
+        find "${picrust2_dir}/KO_metagenome_out" -maxdepth 1 -type f -exec cp -f {} "${branch_dir}/KO/" \;
+    fi
+    if [ -d "${picrust2_dir}/EC_metagenome_out" ]; then
+        find "${picrust2_dir}/EC_metagenome_out" -maxdepth 1 -type f -exec cp -f {} "${branch_dir}/EC/" \;
+    fi
+    if [ -d "${picrust2_dir}/pathways_out" ]; then
+        find "${picrust2_dir}/pathways_out" -maxdepth 1 -type f -exec cp -f {} "${branch_dir}/pathway/" \;
+    fi
+}
+
+run_picrust2_branch "${prefix_dada2}"
+run_picrust2_branch "${prefix_unoise3}"
+
+exit 0

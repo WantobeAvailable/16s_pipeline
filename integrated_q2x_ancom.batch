@@ -1,0 +1,45 @@
+#!/bin/bash
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+prefix=`get_config prefix`
+investigate_group=`get_config investigate_group`
+metadata_file=`get_config metadata_file`
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+output_file="ANCOM"
+
+if [ ! -d ${output_file} ]; then
+    mkdir ${output_file}
+else
+    rm -rf ${output_file}
+    mkdir ${output_file}
+fi
+
+for method_prefix in ${prefix_dada2} ${prefix_unoise3}; do
+    for db in silva gg2; do
+        tab="${method_prefix}_tab_${db}_pk_filtered.qza"
+        result_prefix="${method_prefix}_${db}"
+        taxonomy="${method_prefix}_tax_${db}_pk.qza"
+
+        for i in `seq 2 7`; do
+            qiime taxa collapse \
+                --i-table ${tab} \
+                --i-taxonomy ${taxonomy} \
+                --p-level ${i} \
+                --o-collapsed-table ${output_file}/${result_prefix}_tab_level${i}.qza
+
+            qiime composition add-pseudocount \
+                --i-table ${output_file}/${result_prefix}_tab_level${i}.qza \
+                --o-composition-table ${output_file}/${result_prefix}_tab_level${i}_pse.qza
+
+            qiime composition ancom \
+                --i-table ${output_file}/${result_prefix}_tab_level${i}_pse.qza \
+                --m-metadata-file ${metadata_file} \
+                --m-metadata-column ${investigate_group} \
+                --o-visualization ${output_file}/${result_prefix}_ancom_level${i}_strain.qzv
+        done
+    done
+done
+
+exit 0

@@ -1,0 +1,49 @@
+#!/bin/bash
+# Integrated pipeline runner.
+# Denoising: DADA2 and UNOISE3 only.
+# Taxonomy: SILVA naive Bayes and Greengenes2 independently.
+set -euxo pipefail
+
+PIPELINE_DIR=$(dirname `readlink -f $0`)
+WORK_DIR="${PIPELINE_DIR}"
+export INTEGRATED_PIPELINE_DIR="${PIPELINE_DIR}"
+export CONFIG_FILE="${PIPELINE_DIR}/configuration_integrated.txt"
+export WORK_DIR
+
+cd "${WORK_DIR}"
+path=`which qiime`
+bin_path=`echo ${path%/*}`
+export PATH=$bin_path:$PATH
+
+run_step(){
+    bash "${PIPELINE_DIR}/$1"
+    echo "$1 finished."
+    echo
+}
+
+main(){
+    run_step integrated_q2a_usearchMergePairs.batch
+    run_step integrated_q2b_dada2.batch
+    run_step integrated_q2b_unoise3.batch
+    run_step integrated_q2d_taxaClassify.batch
+    run_step integrated_q2e_taxaFilterMitoChlo.batch
+    run_step integrated_q2x_picrust2.batch
+    run_step integrated_q2x_featuresFilter.batch
+    run_step integrated_q2f_treeBuildFilter.batch
+}
+
+diversityAnalysis(){
+    run_step integrated_q2x_rarefy.batch
+    run_step integrated_q2x_alphaDiversity.batch
+    run_step integrated_q2x_betaDiversity.batch
+}
+
+diffAbunAnalysis(){
+    run_step integrated_q2x_ancom.batch
+}
+
+main
+diversityAnalysis
+diffAbunAnalysis
+
+exit 0

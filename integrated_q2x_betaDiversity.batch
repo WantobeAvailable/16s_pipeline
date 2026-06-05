@@ -1,0 +1,80 @@
+#!/bin/bash
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+prefix=`get_config prefix`
+CPU=`get_config CPU`
+investigate_group=`get_config investigate_group`
+metadata_file=`get_config metadata_file`
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+work_dir="betaDiversity"
+
+if [ ! -d ${work_dir} ]; then
+    mkdir ${work_dir}
+else
+    rm -rf ${work_dir}
+    mkdir ${work_dir}
+fi
+
+pcoaAnalysis(){
+    qiime diversity pcoa \
+        --i-distance-matrix ${work_dir}/${prefix_tab}_${metric}_dm.qza \
+        --p-number-of-dimensions ${dimension} \
+        --o-pcoa ${work_dir}/${prefix_tab}_${metric}_${dimension}_pcoa.qza
+
+    qiime emperor plot \
+        --i-pcoa ${work_dir}/${prefix_tab}_${metric}_${dimension}_pcoa.qza \
+        --m-metadata-file ${metadata_file} \
+        --o-visualization ${work_dir}/${prefix_tab}_${metric}_${dimension}_emperor.qzv
+}
+
+for method_prefix in ${prefix_unoise3} ${prefix_dada2}; do
+    for db in silva gg2; do
+        tab="${method_prefix}_tab_${db}_pk_filtered_rarefy"
+        tree_tab="${method_prefix}_tab_${db}_pk_filtered_trefilt_rarefy"
+        tre="${method_prefix}_${db}_tre_pruned"
+        prefix_tab="${method_prefix}_${db}"
+
+        for metric in jaccard hamming rogerstanimoto minkowski braycurtis euclidean; do
+            qiime diversity beta \
+                --i-table ${tab}.qza \
+                --p-metric ${metric} \
+                --p-n-jobs ${CPU} \
+                --o-distance-matrix ${work_dir}/${prefix_tab}_${metric}_dm.qza
+
+            qiime diversity beta-group-significance \
+                --i-distance-matrix ${work_dir}/${prefix_tab}_${metric}_dm.qza \
+                --m-metadata-file ${metadata_file} \
+                --m-metadata-column "${investigate_group}" \
+                --p-method 'permanova' \
+                --p-no-pairwise \
+                --o-visualization ${work_dir}/${prefix_tab}_${metric}_dm_significance.qzv
+
+            dimension=2
+            pcoaAnalysis
+        done
+
+        for metric in generalized_unifrac weighted_normalized_unifrac unweighted_unifrac weighted_unifrac; do
+            qiime diversity beta-phylogenetic \
+                --i-table ${tree_tab}.qza \
+                --i-phylogeny ${tre}.qza \
+                --p-metric ${metric} \
+                --p-threads ${CPU} \
+                --o-distance-matrix ${work_dir}/${prefix_tab}_${metric}_dm.qza
+
+            qiime diversity beta-group-significance \
+                --i-distance-matrix ${work_dir}/${prefix_tab}_${metric}_dm.qza \
+                --m-metadata-file ${metadata_file} \
+                --m-metadata-column "${investigate_group}" \
+                --p-method 'permanova' \
+                --p-no-pairwise \
+                --o-visualization ${work_dir}/${prefix_tab}_${metric}_dm_significance.qzv
+
+            dimension=2
+            pcoaAnalysis
+        done
+    done
+done
+
+exit 0

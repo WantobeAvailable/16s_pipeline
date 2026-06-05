@@ -1,0 +1,73 @@
+#!/bin/bash
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+prefix=`get_config prefix`
+taxonomy_ref=`get_config taxonomy_ref`
+phylogeny_ref=`get_config phylogeny_ref`
+metadata_file=`get_config metadata_file`
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+
+if [ ! -f ${phylogeny_ref} ]; then
+    wget http://ftp.microbio.me/greengenes_release/2022.10/2022.10.phylogeny.asv.nwk.qza
+fi
+mkdir -p exported-tree
+
+for method_prefix in ${prefix_dada2} ${prefix_unoise3}; do
+    for db in silva gg2; do
+        tab="${method_prefix}_tab_${db}_pk"
+        rep="${method_prefix}_rep_${db}_pk"
+        tax="${method_prefix}_tax_${db}_pk"
+        tre="${method_prefix}_${db}_tre_pruned"
+        filtered_tab="${tab}_filtered"
+        trefilt_tab="${filtered_tab}_trefilt"
+
+        if [ "${db}" == "gg2" ]; then
+            qiime greengenes2 filter-features \
+                --i-feature-table ${filtered_tab}.qza \
+                --i-reference ${taxonomy_ref} \
+                --o-filtered-feature-table ${trefilt_tab}.qza
+
+            qiime phylogeny filter-tree \
+                --i-tree ${phylogeny_ref} \
+                --i-table ${trefilt_tab}.qza \
+                --o-filtered-tree ${tre}.qza
+        else
+            qiime phylogeny align-to-tree-mafft-fasttree \
+                --i-sequences ${rep}.qza \
+                --p-n-threads auto \
+                --o-alignment ${rep}_ali.qza \
+                --o-masked-alignment ${rep}_alim.qza \
+                --o-tree ${rep}_ftre_unroot.qza \
+                --o-rooted-tree ${tre}.qza
+
+            qiime phylogeny filter-table \
+                --i-table ${filtered_tab}.qza \
+                --i-tree ${tre}.qza \
+                --o-filtered-table ${trefilt_tab}.qza
+        fi
+
+        qiime feature-table summarize \
+            --i-table ${filtered_tab}.qza \
+            --o-visualization ${filtered_tab}.qzv \
+            --m-sample-metadata-file ${metadata_file}
+
+        qiime feature-table summarize \
+            --i-table ${trefilt_tab}.qza \
+            --o-visualization ${trefilt_tab}.qzv \
+            --m-sample-metadata-file ${metadata_file}
+
+        qiime taxa barplot \
+            --i-table ${trefilt_tab}.qza \
+            --i-taxonomy ${tax}.qza \
+            --m-metadata-file ${metadata_file} \
+            --o-visualization ${tax}_trefilt_plots.qzv
+
+        qiime tools export \
+            --input-path ${tre}.qza \
+            --output-path exported-tree/${method_prefix}_${db}
+    done
+done
+
+exit 0

@@ -1,0 +1,1015 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1600"
+   height="2200"
+   viewBox="0 0 1600 2200"
+   version="1.1"
+   id="svg77"
+   sodipodi:docname="integrated_pipeline_flowchart.svg"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   inkscape:export-filename="integrated_pipeline_flowchart.jpg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview77"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.66"
+     inkscape:cx="817.42424"
+     inkscape:cy="1601.5152"
+     inkscape:window-width="1920"
+     inkscape:window-height="1023"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="flowchart-content"
+     showguides="true"
+     showgrid="false" />
+  <defs
+     id="defs2">
+    <marker
+       id="arrow"
+       markerWidth="6"
+       markerHeight="6"
+       refX="10"
+       refY="6"
+       orient="auto-start-reverse"
+       markerUnits="strokeWidth"
+       viewBox="0 0 8 8"
+       preserveAspectRatio="xMidYMid">
+      <path
+         d="m 2,2 8,4 -8,4 z"
+         fill="#111111"
+         id="path1" />
+    </marker>
+    <marker
+       id="arrowYellow"
+       markerWidth="14"
+       markerHeight="14"
+       refX="11"
+       refY="7"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M 2,2 12,7 2,12 Z"
+         fill="#ffbf00"
+         id="path2" />
+    </marker>
+    <style
+       id="style2">
+      .title { font-family: Georgia, 'Times New Roman', serif; font-size: 34px; font-weight: 700; fill: #111111; }
+      .label { font-family: Georgia, 'Times New Roman', serif; font-size: 25px; font-weight: 700; fill: #111111; }
+      .small { font-family: Georgia, 'Times New Roman', serif; font-size: 19px; font-weight: 700; fill: #111111; }
+      .tiny { font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; fill: #111111; }
+      .side { font-family: Arial, sans-serif; font-size: 20px; font-weight: 800; fill: #111111; }
+      .boxGreen { fill: #95d652; stroke: #3565a8; stroke-width: 2; }
+      .boxYellow { fill: #ffc20a; stroke: #3565a8; stroke-width: 2; }
+      .boxOrange { fill: #f07f2f; stroke: #3565a8; stroke-width: 2; }
+      .boxBlue { fill: #d9e6f5; stroke: #3565a8; stroke-width: 2; }
+      .panelPurple { fill: #e6d9ef; stroke: #3565a8; stroke-width: 2; opacity: 0.88; }
+      .panelBlue { fill: #e8f3fb; stroke: #3565a8; stroke-width: 2; opacity: 0.92; }
+      .panelWhite { fill: #fffefd; stroke: #ffb000; stroke-width: 2; }
+      .panelOrange { fill: #fffefd; stroke: #ff8a3d; stroke-width: 2; }
+      .resultBand { fill: #ffd987; stroke: #ffb000; stroke-width: 2; }
+      .shadow { fill: #b8b8b8; opacity: 0.75; }
+      .arrow { stroke: #111111; stroke-width: 3; fill: none; marker-end: url(#arrow); stroke-linecap: round; stroke-linejoin: round; }
+      .dashArrow { stroke: #111111; stroke-width: 2.8; fill: none; stroke-dasharray: 9 9; marker-end: url(#arrow); stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
+      .yellowArrow { stroke: #ffbf00; stroke-width: 4; fill: none; marker-end: url(#arrowYellow); stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <g
+     id="flowchart-content"
+     transform="translate(7.3664122,8.4605598)">
+    <!-- Input -->
+    <polygon
+       class="boxBlue"
+       points="975,145 615,145 680,45 1040,45 "
+       id="polygon2"
+       transform="matrix(0.88115865,0,0,1.0004557,63.430096,-46.49892)" />
+    <text
+       class="title"
+       x="790.29938"
+       y="64"
+       text-anchor="middle"
+       id="text2">Clean Data (pair)</text>
+    <line
+       class="arrow"
+       x1="790.29938"
+       y1="101"
+       x2="790.29938"
+       y2="151"
+       id="line2" />
+    <rect
+       class="boxGreen"
+       x="600.27069"
+       y="152.17992"
+       width="376.01022"
+       height="100.1047"
+       rx="13.853008"
+       id="rect2" />
+    <text
+       class="label"
+       x="791.50806"
+       y="192.87022"
+       text-anchor="middle"
+       id="text3">integrated_q2a_</text>
+    <text
+       class="small"
+       x="792.56177"
+       y="230.74809"
+       text-anchor="middle"
+       id="text4"
+       style="font-size:25px">usearchMergePairs</text>
+    <!-- Denoising -->
+    <rect
+       class="panelPurple"
+       x="233.29941"
+       y="311"
+       width="1110"
+       height="260"
+       rx="58"
+       id="rect4"
+       style="fill:#f4d7d7" />
+    <rect
+       class="shadow"
+       x="245.01697"
+       y="288"
+       width="285"
+       height="48"
+       id="rect5" />
+    <text
+       class="title"
+       x="385.59964"
+       y="323"
+       text-anchor="middle"
+       fill="#7b3db9"
+       id="text5">Denoising</text>
+    <path
+       class="arrow"
+       d="m 790.2994,256 v 65 h -257 v 55"
+       id="path5" />
+    <path
+       class="arrow"
+       d="m 790.2994,256 v 65 h 258.0001 v 55"
+       id="path6" />
+    <rect
+       class="boxYellow"
+       x="363.29938"
+       y="376"
+       width="340"
+       height="105"
+       rx="14"
+       id="rect6" />
+    <text
+       class="label"
+       x="533.29938"
+       y="426"
+       text-anchor="middle"
+       id="text6">integrated_q2b_dada2</text>
+    <text
+       class="small"
+       x="533.29938"
+       y="456"
+       text-anchor="middle"
+       id="text7">(ASV)</text>
+    <rect
+       class="boxGreen"
+       x="878.29938"
+       y="376"
+       width="340"
+       height="105"
+       rx="14"
+       id="rect7"
+       style="fill:#ffc20a;fill-opacity:1" />
+    <text
+       class="label"
+       x="1048.2994"
+       y="426"
+       text-anchor="middle"
+       id="text8">integrated_q2b_unoise3</text>
+    <text
+       class="small"
+       x="1048.2994"
+       y="456"
+       text-anchor="middle"
+       id="text9">(ZOTU)</text>
+    <polygon
+       class="boxBlue"
+       points="430,565 755,565 710,610 385,610 "
+       id="polygon9"
+       transform="matrix(0.91185073,0,0,1.0019624,13.438276,-54.82214)" />
+    <text
+       class="small"
+       x="533.29938"
+       y="541.53943"
+       text-anchor="middle"
+       id="text10">test_da2_tab / test_da2_rep</text>
+    <polygon
+       class="boxBlue"
+       points="945,565 1270,565 1225,610 900,610 "
+       id="polygon10"
+       transform="matrix(0.91242121,0,0,1.0019488,58.323096,-54.814123)" />
+    <text
+       class="small"
+       x="1049.5082"
+       y="541.53931"
+       text-anchor="middle"
+       id="text11">test_un3_tab / test_un3_rep</text>
+    <!-- Database branches -->
+    <rect
+       class="panelPurple"
+       x="38.299404"
+       y="646"
+       width="710"
+       height="705"
+       rx="58"
+       id="rect11" />
+    <rect
+       class="shadow"
+       x="9.2592592"
+       y="615.12213"
+       width="192.21375"
+       height="82.633591"
+       id="rect12"
+       style="stroke-width:0.981134" />
+    <text
+       class="title"
+       x="108.42664"
+       y="645.07886"
+       text-anchor="middle"
+       fill="#7b3db9"
+       id="text12"><tspan
+         sodipodi:role="line"
+         id="tspan77"
+         x="108.42664"
+         y="645.07886">SILVA</tspan><tspan
+         sodipodi:role="line"
+         id="tspan78"
+         x="108.42664"
+         y="687.57886">branches</tspan></text>
+    <rect
+       class="panelBlue"
+       x="828.29938"
+       y="646"
+       width="710"
+       height="705"
+       rx="58"
+       id="rect13" />
+    <rect
+       class="shadow"
+       x="1345.0227"
+       y="610.28754"
+       width="246.28499"
+       height="88.676849"
+       id="rect14"
+       style="stroke-width:1.00787" />
+    <text
+       class="title"
+       x="1466.3912"
+       y="645.07892"
+       text-anchor="middle"
+       fill="#d6be00"
+       id="text14"><tspan
+         sodipodi:role="line"
+         id="tspan80"
+         x="1466.3912"
+         y="645.07892">Greengenes2</tspan><tspan
+         sodipodi:role="line"
+         x="1466.3912"
+         y="687.57892"
+         id="tspan81">branches</tspan></text>
+    <!-- Denoising outputs to database branches -->
+    <path
+       class="arrow"
+       d="m 533.2994,566 v 40 h -310 v 110"
+       id="path14" />
+    <path
+       class="arrow"
+       d="m 1048.2995,566 v 40 H 533.2994 v 110"
+       id="path15" />
+    <path
+       class="arrow"
+       d="M 533.31222,559.95589 V 605.319 h 477.97498 v 105.84723"
+       id="path16" />
+    <path
+       class="arrow"
+       d="m 1048.4007,557.53163 v 47.90544 h 284.8049 v 111.77937"
+       id="path17" />
+    <!-- SILVA DADA2 lane -->
+    <rect
+       class="boxYellow"
+       x="103.29942"
+       y="716"
+       width="240"
+       height="80"
+       rx="12"
+       id="rect17" />
+    <text
+       class="small"
+       x="223.29941"
+       y="749"
+       text-anchor="middle"
+       id="text17">q2d_taxaClassify</text>
+    <text
+       class="tiny"
+       x="223.29941"
+       y="774"
+       text-anchor="middle"
+       id="text18">DADA2 + SILVA</text>
+    <line
+       class="arrow"
+       x1="223.29941"
+       y1="796"
+       x2="223.29941"
+       y2="856"
+       id="line18" />
+    <rect
+       class="boxYellow"
+       x="103.29942"
+       y="856"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect18" />
+    <text
+       class="small"
+       x="223.29941"
+       y="893"
+       text-anchor="middle"
+       id="text19">q2e_taxaFilter</text>
+    <text
+       class="small"
+       x="223.29941"
+       y="919"
+       text-anchor="middle"
+       id="text20">MitoChlo</text>
+    <line
+       class="arrow"
+       x1="223.29941"
+       y1="948"
+       x2="223.29941"
+       y2="1011"
+       id="line20" />
+    <rect
+       class="boxYellow"
+       x="103.29942"
+       y="1011"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect20" />
+    <text
+       class="small"
+       x="223.29941"
+       y="1061"
+       text-anchor="middle"
+       id="text21">q2x_featuresFilter</text>
+    <line
+       class="arrow"
+       x1="223.29941"
+       y1="1103"
+       x2="223.29941"
+       y2="1166"
+       id="line22" />
+    <rect
+       class="boxYellow"
+       x="103.29942"
+       y="1166"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect22" />
+    <text
+       class="small"
+       x="221.78426"
+       y="1217.6666"
+       text-anchor="middle"
+       id="text23">q2f_treeBuildFilter</text>
+    <!-- SILVA UNOISE3 lane -->
+    <rect
+       class="boxYellow"
+       x="413.29938"
+       y="716"
+       width="240"
+       height="80"
+       rx="12"
+       id="rect24" />
+    <text
+       class="small"
+       x="533.29938"
+       y="749"
+       text-anchor="middle"
+       id="text25">q2d_taxaClassify</text>
+    <text
+       class="tiny"
+       x="533.29938"
+       y="774"
+       text-anchor="middle"
+       id="text26">UNOISE3 + SILVA</text>
+    <line
+       class="arrow"
+       x1="533.29938"
+       y1="796"
+       x2="533.29938"
+       y2="856"
+       id="line26" />
+    <rect
+       class="boxYellow"
+       x="413.29938"
+       y="856"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect26" />
+    <text
+       class="small"
+       x="533.29938"
+       y="893"
+       text-anchor="middle"
+       id="text27">q2e_taxaFilter</text>
+    <text
+       class="small"
+       x="533.29938"
+       y="919"
+       text-anchor="middle"
+       id="text28">MitoChlo</text>
+    <line
+       class="arrow"
+       x1="533.29938"
+       y1="948"
+       x2="533.29938"
+       y2="1011"
+       id="line28" />
+    <rect
+       class="boxYellow"
+       x="413.29938"
+       y="1011"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect28"
+       style="stroke-linejoin:miter" />
+    <text
+       class="small"
+       x="533.29938"
+       y="1061"
+       text-anchor="middle"
+       id="text29">q2x_featuresFilter</text>
+    <line
+       class="arrow"
+       x1="533.29938"
+       y1="1103"
+       x2="533.29938"
+       y2="1166"
+       id="line30" />
+    <rect
+       class="boxYellow"
+       x="413.29938"
+       y="1166"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect30" />
+    <text
+       class="small"
+       x="533.29938"
+       y="1217.667"
+       text-anchor="middle"
+       id="text31">q2f_treeBuildFilter</text>
+    <!-- GG2 DADA2 lane -->
+    <rect
+       class="boxYellow"
+       x="893.29938"
+       y="716"
+       width="240"
+       height="80"
+       rx="12"
+       id="rect32" />
+    <text
+       class="small"
+       x="1013.2995"
+       y="749"
+       text-anchor="middle"
+       id="text33">q2d_taxaClassify</text>
+    <text
+       class="tiny"
+       x="1013.2995"
+       y="774"
+       text-anchor="middle"
+       id="text34">DADA2 + GG2</text>
+    <line
+       class="arrow"
+       x1="1013.2995"
+       y1="796"
+       x2="1013.2995"
+       y2="856"
+       id="line34" />
+    <rect
+       class="boxYellow"
+       x="893.29938"
+       y="856"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect34" />
+    <text
+       class="small"
+       x="1013.2995"
+       y="893"
+       text-anchor="middle"
+       id="text35">q2e_taxaFilter</text>
+    <text
+       class="small"
+       x="1013.2995"
+       y="919"
+       text-anchor="middle"
+       id="text36">MitoChlo</text>
+    <line
+       class="arrow"
+       x1="1013.2995"
+       y1="948"
+       x2="1013.2995"
+       y2="1011"
+       id="line36" />
+    <rect
+       class="boxYellow"
+       x="893.29938"
+       y="1011"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect36" />
+    <text
+       class="small"
+       x="1013.2995"
+       y="1061"
+       text-anchor="middle"
+       id="text37">q2x_featuresFilter</text>
+    <line
+       class="arrow"
+       x1="1013.2995"
+       y1="1103"
+       x2="1013.2995"
+       y2="1166"
+       id="line38" />
+    <rect
+       class="boxYellow"
+       x="893.29938"
+       y="1166"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect38" />
+    <text
+       class="small"
+       x="1013.2995"
+       y="1217.667"
+       text-anchor="middle"
+       id="text39">q2f_treeBuildFilter</text>
+    <!-- GG2 UNOISE3 lane -->
+    <rect
+       class="boxYellow"
+       x="1203.2994"
+       y="716"
+       width="240"
+       height="80"
+       rx="12"
+       id="rect40" />
+    <text
+       class="small"
+       x="1323.2994"
+       y="749"
+       text-anchor="middle"
+       id="text41">q2d_taxaClassify</text>
+    <text
+       class="tiny"
+       x="1323.2994"
+       y="774"
+       text-anchor="middle"
+       id="text42">UNOISE3 + GG2</text>
+    <line
+       class="arrow"
+       x1="1323.2994"
+       y1="796"
+       x2="1323.2994"
+       y2="856"
+       id="line42" />
+    <rect
+       class="boxYellow"
+       x="1203.2994"
+       y="856"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect42" />
+    <text
+       class="small"
+       x="1323.2994"
+       y="893"
+       text-anchor="middle"
+       id="text43">q2e_taxaFilter</text>
+    <text
+       class="small"
+       x="1323.2994"
+       y="919"
+       text-anchor="middle"
+       id="text44">MitoChlo</text>
+    <line
+       class="arrow"
+       x1="1323.2994"
+       y1="948"
+       x2="1323.2994"
+       y2="1011"
+       id="line44" />
+    <rect
+       class="boxYellow"
+       x="1203.2994"
+       y="1011"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect44" />
+    <text
+       class="small"
+       x="1323.2994"
+       y="1061"
+       text-anchor="middle"
+       id="text45">q2x_featuresFilter</text>
+    <line
+       class="arrow"
+       x1="1323.2994"
+       y1="1103"
+       x2="1323.2994"
+       y2="1166"
+       id="line46" />
+    <rect
+       class="boxYellow"
+       x="1203.2994"
+       y="1166"
+       width="240"
+       height="92"
+       rx="12"
+       id="rect46" />
+    <text
+       class="small"
+       x="1323.2994"
+       y="1217.667"
+       text-anchor="middle"
+       id="text47">q2f_treeBuildFilter</text>
+    <!-- PICRUSt2 branch from SILVA-filtered inputs -->
+    <path
+       class="dashArrow"
+       d="M 92.251071,904.08434 V 1451.6228 H 360.84567 v 93.3509"
+       id="path48"
+       style="stroke-width:3.13965;stroke-dasharray:10.0917, 10.0917;stroke-dashoffset:0" />
+    <!-- Output files -->
+    <path
+       class="arrow"
+       d="m 223.14365,1258.5128 v 65.8897 h 572.54792 v 56.9046"
+       id="path50" />
+    <path
+       class="arrow"
+       d="m 1323.3173,1258.4239 v 67.5325 H 795.54015 v 58.3235"
+       id="path53"
+       inkscape:transform-center-x="-18.907818"
+       inkscape:transform-center-y="-1.8948046" />
+    <polygon
+       class="boxBlue"
+       points="710,1400 1000,1400 950,1495 660,1495 "
+       id="polygon53"
+       transform="matrix(1.1011227,0,0,1.0525962,-119.35825,-89.358163)" />
+    <text
+       class="title"
+       x="795.48346"
+       y="1446.114"
+       text-anchor="middle"
+       id="text53">Output files</text>
+    <!-- Functional prediction -->
+    <rect
+       class="panelOrange"
+       x="191.87663"
+       y="1577.8945"
+       width="348.82016"
+       height="174.62631"
+       rx="13.143949"
+       id="rect53" />
+    <rect
+       class="shadow"
+       x="249.27272"
+       y="1544.7354"
+       width="229.99998"
+       height="48"
+       id="rect54"
+       style="stroke-width:0.731358" />
+    <text
+       class="side"
+       x="361.24243"
+       y="1576.5267"
+       text-anchor="middle"
+       id="text54"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial, sans-serif;-inkscape-font-specification:'Arial, sans-serif Bold'">Functional prediction</text>
+    <rect
+       class="boxOrange"
+       x="254.88741"
+       y="1624.0133"
+       width="220.15784"
+       height="82.157837"
+       rx="10.161131"
+       id="rect55"
+       style="fill:#ffc20a;fill-opacity:1" />
+    <text
+       class="small"
+       x="363.19083"
+       y="1670.9623"
+       text-anchor="middle"
+       id="text55">q2x_picrust2</text>
+    <!-- Diversity analysis -->
+    <path
+       class="arrow"
+       d="m 797.08728,1487.2719 v 60.0623"
+       id="path58"
+       style="stroke-width:2.43847;stroke-dasharray:none" />
+    <rect
+       class="panelWhite"
+       x="594.15686"
+       y="1578.0955"
+       width="411.46738"
+       height="256.8634"
+       rx="31.138071"
+       id="rect58" />
+    <rect
+       class="shadow"
+       x="1546.2506"
+       y="-893.27063"
+       width="48"
+       height="195.9406"
+       id="rect59"
+       transform="rotate(90)"
+       style="stroke-width:1.11243" />
+    <text
+       class="side"
+       x="782.85358"
+       y="1585.8872"
+       text-anchor="middle"
+       transform="rotate(-0.57186294)"
+       id="text59"
+       inkscape:transform-center-y="-0.29213702"
+       inkscape:transform-center-x="1.0098941">Diversity analysis</text>
+    <rect
+       class="boxYellow"
+       x="688.4754"
+       y="1601.3666"
+       width="220"
+       height="82"
+       rx="12"
+       id="rect60" />
+    <text
+       class="small"
+       x="801.62164"
+       y="1647.5181"
+       text-anchor="middle"
+       id="text60">q2x_rarefy</text>
+    <path
+       class="arrow"
+       d="m 794.89247,1689.1472 v 18.7223 h -99.47581 v 24.4202"
+       id="path61"
+       style="stroke-width:3;stroke-dasharray:none;marker-end:url(#arrow)" />
+    <path
+       class="arrow"
+       d="m 794.02517,1686.8354 v 20.4865 h 105.94399 v 26.7214"
+       id="path62"
+       style="stroke-width:3;stroke-dasharray:none" />
+    <rect
+       class="boxYellow"
+       x="612.38"
+       y="1734.0596"
+       width="160"
+       height="82"
+       rx="12"
+       id="rect62" />
+    <text
+       class="small"
+       x="693.90546"
+       y="1763.8181"
+       text-anchor="middle"
+       id="text62">q2x_alpha</text>
+    <text
+       class="small"
+       x="693.90552"
+       y="1795.8788"
+       text-anchor="middle"
+       id="text63">Diversity</text>
+    <rect
+       class="boxYellow"
+       x="821.86438"
+       y="1733.9568"
+       width="160"
+       height="82"
+       rx="12"
+       id="rect63" />
+    <text
+       class="small"
+       x="905.74097"
+       y="1763.818"
+       text-anchor="middle"
+       id="text64">q2x_beta</text>
+    <text
+       class="small"
+       x="906.04749"
+       y="1795.879"
+       text-anchor="middle"
+       id="text65">Diversity</text>
+    <!-- Differential abundance -->
+    <path
+       class="arrow"
+       d="m 798.21069,1486.7053 v 28.3359 h 474.37561 v 28.3359"
+       id="path65"
+       style="stroke-width:2.92242;stroke-dasharray:none" />
+    <rect
+       class="panelOrange"
+       x="1069.1552"
+       y="1576.6829"
+       width="410.15295"
+       height="174.77895"
+       rx="28.010445"
+       id="rect65" />
+    <rect
+       class="shadow"
+       x="1144.3904"
+       y="1539.9091"
+       width="285"
+       height="66"
+       id="rect66" />
+    <text
+       class="side"
+       x="1280.3297"
+       y="1568.9091"
+       text-anchor="middle"
+       id="text66">Differential</text>
+    <text
+       class="side"
+       x="1286.3904"
+       y="1594.9091"
+       text-anchor="middle"
+       id="text67">abundance analysis</text>
+    <rect
+       class="boxOrange"
+       x="1102.8102"
+       y="1628.6375"
+       width="150"
+       height="82"
+       rx="12"
+       id="rect67"
+       style="fill:#ffc20a;fill-opacity:1" />
+    <text
+       class="small"
+       x="1176.0232"
+       y="1661.8385"
+       text-anchor="middle"
+       id="text68">LEfSe</text>
+    <text
+       class="tiny"
+       x="1179.9557"
+       y="1690.3364"
+       text-anchor="middle"
+       id="text69"
+       style="font-size:19px">analysis</text>
+    <rect
+       class="boxYellow"
+       x="1288.0751"
+       y="1628.6375"
+       width="150"
+       height="82"
+       rx="12"
+       id="rect69" />
+    <text
+       class="small"
+       x="1367.3314"
+       y="1674.8619"
+       text-anchor="middle"
+       id="text70">q2x_ancom</text>
+    <text
+       class="tiny"
+       x="1417.6378"
+       y="1696.397"
+       text-anchor="middle"
+       id="text71" />
+    <!-- Results band -->
+    <line
+       class="yellowArrow"
+       x1="903.01715"
+       y1="1820.4441"
+       x2="903.01715"
+       y2="1895.9359"
+       id="line72"
+       style="stroke-width:3;stroke-dasharray:none" />
+    <line
+       class="yellowArrow"
+       x1="368.84641"
+       y1="1711.2314"
+       x2="368.84641"
+       y2="1892.5863"
+       id="line73"
+       style="stroke-width:3;stroke-dasharray:none" />
+    <line
+       class="yellowArrow"
+       x1="1173.3168"
+       y1="1714.5194"
+       x2="1173.3168"
+       y2="1894.3171"
+       id="line75"
+       style="stroke-width:3;stroke-dasharray:none" />
+    <line
+       class="yellowArrow"
+       x1="1362.4794"
+       y1="1714.5178"
+       x2="1362.4794"
+       y2="1892.8568"
+       id="line76"
+       style="stroke-width:3;stroke-dasharray:none" />
+    <line
+       class="yellowArrow"
+       x1="691.97925"
+       y1="1817.4974"
+       x2="691.97925"
+       y2="1896.3557"
+       id="line77"
+       style="stroke-width:2.92119;stroke-dasharray:none" />
+    <rect
+       class="resultBand"
+       x="80.270027"
+       y="1896.6466"
+       width="1440"
+       height="70"
+       id="rect77" />
+    <text
+       class="title"
+       x="805.22052"
+       y="1943.8651"
+       text-anchor="middle"
+       id="text77">Results display</text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3.655;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:11.7482, 11.7482;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 103.29942,901.28637 82.955895,901.16539"
+       id="path81"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect18" />
+    <path
+       style="fill:#000000;stroke-width:3.655;stroke-dasharray:11.7482, 11.7482"
+       d="M 531.92536,481.04326 Z"
+       id="path4" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 533.24645,481 -0.0305,30.28662"
+       id="path7"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect6"
+       inkscape:connection-end="#polygon9"
+       inkscape:highlight-color="#000000" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 1048.2997,481 3e-4,30.28695"
+       id="path8"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#rect7"
+       inkscape:connection-end="#polygon10" />
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.77494;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 533.32756,1258.0025 0.0468,65.0159"
+       id="path9"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0" />
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.81849;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 1013.8832,1258.0067 0.975,66.8594"
+       id="path10"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:19px;writing-mode:lr-tb;direction:ltr;fill:#ffc20a;fill-opacity:1;stroke-width:3;stroke-dasharray:none;stroke-dashoffset:0"
+       x="938.0882"
+       y="1706.6909"
+       id="text22"><tspan
+         sodipodi:role="line"
+         id="tspan21"
+         x="938.0882"
+         y="1706.6909"> </tspan></text>
+    <polyline
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3.48014;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:13.9206, 13.9206;stroke-dashoffset:12.5285;stroke-opacity:1;marker-end:url(#arrow)"
+       points="413.91226,902.57771 361,902.57771 361,1549"
+       id="polyline" />
+  </g>
+</svg>

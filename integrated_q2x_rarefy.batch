@@ -1,0 +1,49 @@
+#!/bin/bash
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+prefix=`get_config prefix`
+dada2_sampleDepth=`get_config dada2_sampleDepth`
+dada2_sampleDepthTree=`get_config dada2_sampleDepthTree`
+unoise3_sampleDepth=`get_config unoise3_sampleDepth`
+unoise3_sampleDepthTree=`get_config unoise3_sampleDepthTree`
+metadata_file=`get_config metadata_file`
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+
+for method_prefix in ${prefix_dada2} ${prefix_unoise3}; do
+    if [ "${method_prefix}" == "${prefix_dada2}" ]; then
+        sample_depth=${dada2_sampleDepth}
+        tree_sample_depth=${dada2_sampleDepthTree}
+    else
+        sample_depth=${unoise3_sampleDepth}
+        tree_sample_depth=${unoise3_sampleDepthTree}
+    fi
+
+    for db in silva gg2; do
+        tab="${method_prefix}_tab_${db}_pk_filtered"
+        tree_tab="${tab}_trefilt"
+
+        qiime feature-table rarefy \
+            --i-table ${tab}.qza \
+            --p-sampling-depth ${sample_depth} \
+            --o-rarefied-table ${tab}_rarefy.qza
+
+        qiime feature-table summarize \
+            --m-sample-metadata-file ${metadata_file} \
+            --i-table ${tab}_rarefy.qza \
+            --o-visualization ${tab}_rarefy.qzv
+
+        qiime feature-table rarefy \
+            --i-table ${tree_tab}.qza \
+            --p-sampling-depth ${tree_sample_depth} \
+            --o-rarefied-table ${tree_tab}_rarefy.qza
+
+        qiime feature-table summarize \
+            --m-sample-metadata-file ${metadata_file} \
+            --i-table ${tree_tab}_rarefy.qza \
+            --o-visualization ${tree_tab}_rarefy.qzv
+    done
+done
+
+exit 0

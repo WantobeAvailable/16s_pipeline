@@ -1,0 +1,50 @@
+#!/bin/bash
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+prefix=`get_config prefix`
+metadata_file=`get_config metadata_file`
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+
+for method_prefix in ${prefix_dada2} ${prefix_unoise3}; do
+    for db in silva gg2; do
+        taxonomy=${method_prefix}_tax_${db}
+        table=${method_prefix}_tab_${db}
+        sequence=${method_prefix}_rep_${db}
+
+        qiime taxa filter-table --verbose \
+            --p-include k__Bacteria,k__Archaea,d__Bacteria,d__Archaea \
+            --p-exclude mitochondria,chloroplast \
+            --i-taxonomy ${taxonomy}.qza \
+            --i-table ${table}.qza \
+            --o-filtered-table ${table}_pk.qza
+
+        qiime taxa filter-seqs --verbose \
+            --p-include k__Bacteria,k__Archaea,d__Bacteria,d__Archaea \
+            --p-exclude mitochondria,chloroplast \
+            --i-taxonomy ${taxonomy}.qza \
+            --i-sequences ${sequence}.qza \
+            --o-filtered-sequences ${sequence}_pk.qza
+
+        qiime taxa barplot \
+            --i-table ${table}_pk.qza \
+            --i-taxonomy ${taxonomy}.qza \
+            --m-metadata-file ${metadata_file} \
+            --o-visualization ${taxonomy}_pk_plots.qzv
+
+        qiime feature-table summarize \
+            --m-sample-metadata-file ${metadata_file} \
+            --i-table ${table}_pk.qza \
+            --o-visualization ${table}_pk.qzv
+
+        qiime feature-table tabulate-seqs \
+            --i-data ${sequence}_pk.qza \
+            --o-visualization ${sequence}_pk.qzv
+
+        cp -f ${taxonomy}.qza ${taxonomy}_pk.qza
+        cp -f ${taxonomy}.qzv ${taxonomy}_pk.qzv
+    done
+done
+
+exit 0
