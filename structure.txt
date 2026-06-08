@@ -1,0 +1,31 @@
+文件夹 PATH 列表
+卷序列号为 06DB-BE50
+C:.
+│  structure.txt
+│  
+├─config
+│      configuration_integrated.txt
+│      
+├─docs
+│      integrated_pipeline_flowchart.svg
+│      README_integrated.md
+│      
+├─examples
+├─results_example
+├─scripts
+│      integrated_q2a_usearchMergePairs.batch
+│      integrated_q2b_dada2.batch
+│      integrated_q2b_unoise3.batch
+│      integrated_q2d_taxaClassify.batch
+│      integrated_q2e_taxaFilterMitoChlo.batch
+│      integrated_q2f_treeBuildFilter.batch
+│      integrated_q2x_alphaDiversity.batch
+│      integrated_q2x_ancom.batch
+│      integrated_q2x_betaDiversity.batch
+│      integrated_q2x_featuresFilter.batch
+│      integrated_q2x_picrust2.batch
+│      integrated_q2x_rarefy.batch
+│      run_integrated_dualdb.batch
+│      run_wilcoxon.R
+│      
+└─test_data
