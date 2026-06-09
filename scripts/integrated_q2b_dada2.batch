@@ -8,6 +8,7 @@ get_config(){
 
 prefix=`get_config prefix`
 CPU=`get_config CPU`
+metadata_file=`get_config metadata_file`
 dada2_max_ee=`get_config dada2_max_ee`
 dada2_pooling_method=`get_config dada2_pooling_method`
 dada2_chimera_method=`get_config dada2_chimera_method`
@@ -76,7 +77,7 @@ echo
 ########
 
 qiime feature-table summarize \
-  --m-sample-metadata-file ${manifest}.tsv \
+  --m-sample-metadata-file ${metadata_file} \
   --i-table ${prefix_dada2}_tab.qza \
   --o-visualization ${prefix_dada2}_tab.qzv
 

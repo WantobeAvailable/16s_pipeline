@@ -1,15 +1,15 @@
 # Parameters for scripts in integrate_pipline/.
-prefix=test
+prefix=pictest
 sequence_type=2
 region=V3V4
-
-classifier=ref_data/silva-138-99-515-806-nb-classifier.qza
+        
+classifier=fbh_classifier-v3_v4.qza
 backbone=2022.10.backbone.full-length.fna.qza
 taxonomy_ref=2022.10.taxonomy.asv.nwk.qza
 phylogeny_ref=2022.10.phylogeny.asv.nwk.qza
-
-metadata_file=sample-metadata.tsv
-usearch_command=/RAID5_32T/oyjh/bin/usearch
+        
+metadata_file=sample_metadata.tsv
+usearch_command=/RAID6_48T/jxy/software/usearch
 CPU=40
 unoise3_minsize=8
 fastq_maxee=3.6
@@ -25,3 +25,4 @@ dada2_sampleDepth=9700
 dada2_sampleDepthTree=9700
 unoise3_sampleDepth=34500
 unoise3_sampleDepthTree=34500
+test_method=Wilcoxon
