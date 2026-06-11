@@ -1,6 +1,5 @@
 # Parameters for scripts in integrate_pipline/.
 prefix=pictest
-sequence_type=2
 region=V3V4
         
 classifier=fbh_classifier-v3_v4.qza
