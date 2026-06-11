@@ -7,7 +7,7 @@ This repository provides an integrated 16S rRNA amplicon sequencing analysis pip
 It is designed for reproducible microbiome analysis from paired-end FASTQ files to taxonomic profiling, diversity analysis, differential abundance analysis and optional functional prediction.
 ## Workflow
 
-![workflow](docs/integrated_pipeline_flowchart.svg)
+![workflow](docs/integrated_pipeline_flowchart.jpg)
 
 ## Main Features
 
