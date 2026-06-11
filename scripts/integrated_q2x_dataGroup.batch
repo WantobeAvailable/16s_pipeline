@@ -1,0 +1,68 @@
+#!/bin/bash
+# Filter integrated pipeline feature tables by a metadata grouping condition.
+# This script overwrites the downstream default input tables when enabled.
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+prefix=`get_config prefix`
+metadata_file=`get_config metadata_file`
+investigate_group=`get_config investigate_group`
+data_group_column=`get_config data_group_column`
+data_group_where=`get_config data_group_where`
+data_group_suffix=`get_config data_group_suffix`
+
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+
+if [ -z "${data_group_column}" ]; then
+    data_group_column="${investigate_group}"
+fi
+
+if [ -z "${data_group_suffix}" ]; then
+    data_group_suffix=$(echo "${data_group_column}" | sed 's/[^A-Za-z0-9_.-]/_/g')
+fi
+
+if [ -z "${data_group_where}" ]; then
+    data_group_where="[${data_group_column}] IS NOT NULL AND [${data_group_column}] != '' AND [${data_group_column}] != 'NA'"
+fi
+
+filter_table(){
+    local input_table=$1
+    local input_prefix="${input_table%.qza}"
+    local input_qzv="${input_prefix}.qzv"
+    local tmp_table="${input_prefix}.${data_group_suffix}.$$.tmp.qza"
+    local tmp_qzv="${input_prefix}.${data_group_suffix}.$$.tmp.qzv"
+
+    if [ ! -f "${input_table}" ]; then
+        echo "WARNING: ${input_table} not found, skipping."
+        return
+    fi
+
+    qiime feature-table filter-samples \
+        --i-table "${input_table}" \
+        --m-metadata-file "${metadata_file}" \
+        --p-where "${data_group_where}" \
+        --o-filtered-table "${tmp_table}"
+
+    qiime feature-table summarize \
+        --i-table "${tmp_table}" \
+        --m-sample-metadata-file "${metadata_file}" \
+        --o-visualization "${tmp_qzv}"
+
+    mv -f "${tmp_table}" "${input_table}"
+    mv -f "${tmp_qzv}" "${input_qzv}"
+
+    echo "${input_table} overwritten with metadata filter: ${data_group_where}"
+}
+
+for method_prefix in ${prefix_dada2} ${prefix_unoise3}; do
+    for db in silva gg2; do
+        tab="${method_prefix}_tab_${db}_pk_filtered.qza"
+        tree_tab="${method_prefix}_tab_${db}_pk_filtered_trefilt.qza"
+
+        filter_table "${tab}"
+        filter_table "${tree_tab}"
+    done
+done
+
+exit 0

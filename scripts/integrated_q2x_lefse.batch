@@ -1,0 +1,216 @@
+#!/bin/bash
+# Run LEfSe on the integrated DADA2/UNOISE3 x SILVA/GG2 taxonomy branches.
+set -euxo pipefail
+source "$(dirname `readlink -f $0`)/integrated_common.sh"
+
+prefix=`get_config prefix`
+metadata_file=`get_config metadata_file`
+investigate_group=`get_config investigate_group`
+prefix_dada2="${prefix}_da2"
+prefix_unoise3="${prefix}_un3"
+
+output_root="LEFSE"
+raw_data_dir="${output_root}/rawData"
+
+if [ ! -d "${output_root}" ]; then
+    mkdir "${output_root}"
+else
+    rm -rf "${output_root}"
+    mkdir "${output_root}"
+fi
+mkdir -p "${raw_data_dir}"
+
+make_lefse_input(){
+    local input_feature_table=$1
+    local input_taxonomy=$2
+    local result_prefix=$3
+    local branch_dir="${raw_data_dir}/${result_prefix}"
+    local merged_ra="${branch_dir}/${result_prefix}_tabMerge_RA.tsv"
+    local filtered_ra="${branch_dir}/${result_prefix}_tabMerge_RA_${investigate_group}.tsv"
+    local lefse_input="${branch_dir}/${result_prefix}_tabMerge_RA_lefseInput.tsv"
+
+    mkdir -p "${branch_dir}"
+
+    for level in `seq 1 7`; do
+        local collapsed="${branch_dir}/${result_prefix}_level${level}.qza"
+        local relative="${branch_dir}/${result_prefix}_level${level}_RA.qza"
+        local export_dir="${branch_dir}/${result_prefix}_level${level}_export"
+        local export_ra_dir="${branch_dir}/${result_prefix}_level${level}_RA_export"
+        local table_tsv="${branch_dir}/${result_prefix}_level${level}.tsv"
+        local table_ra_tsv="${branch_dir}/${result_prefix}_level${level}_RA.tsv"
+
+        qiime taxa collapse \
+            --i-table "${input_feature_table}" \
+            --i-taxonomy "${input_taxonomy}" \
+            --p-level "${level}" \
+            --o-collapsed-table "${collapsed}"
+
+        qiime feature-table relative-frequency \
+            --i-table "${collapsed}" \
+            --o-relative-frequency-table "${relative}"
+
+        qiime tools export \
+            --input-path "${collapsed}" \
+            --output-path "${export_dir}"
+
+        biom convert \
+            -i "${export_dir}/feature-table.biom" \
+            -o "${table_tsv}" \
+            --to-tsv
+
+        qiime tools export \
+            --input-path "${relative}" \
+            --output-path "${export_ra_dir}"
+
+        biom convert \
+            -i "${export_ra_dir}/feature-table.biom" \
+            -o "${table_ra_tsv}" \
+            --to-tsv
+
+        rm -f "${collapsed}" "${relative}"
+    done
+
+    awk '
+    /^# Constructed from biom/ {next}
+    /^#OTU ID/ {
+        if (header_seen) {
+            next
+        }
+        header_seen = 1
+    }
+    {print}
+    ' \
+        "${branch_dir}/${result_prefix}_level1_RA.tsv" \
+        "${branch_dir}/${result_prefix}_level2_RA.tsv" \
+        "${branch_dir}/${result_prefix}_level3_RA.tsv" \
+        "${branch_dir}/${result_prefix}_level4_RA.tsv" \
+        "${branch_dir}/${result_prefix}_level5_RA.tsv" \
+        "${branch_dir}/${result_prefix}_level6_RA.tsv" \
+        "${branch_dir}/${result_prefix}_level7_RA.tsv" \
+        > "${merged_ra}"
+
+    awk -F'\t' -v group_col_name="${investigate_group}" -v OFS='\t' '
+    NR==FNR {
+        if (FNR == 1) {
+            for (i = 1; i <= NF; i++) {
+                gsub(/\r/, "", $i)
+                if ($i == group_col_name) {
+                    group_col = i
+                }
+            }
+            if (!group_col) {
+                printf("ERROR: Group column %s was not found in metadata.\n", group_col_name) > "/dev/stderr"
+                exit 1
+            }
+            next
+        }
+        sample = $1
+        group = $group_col
+        gsub(/\r/, "", sample)
+        gsub(/\r/, "", group)
+        if (sample != "" && group != "" && group != "NA") {
+            sample_group[sample] = group
+        }
+        next
+    }
+    FNR == 1 {
+        out = $1
+        class_line = "class"
+        for (i = 2; i <= NF; i++) {
+            sample = $i
+            gsub(/\r/, "", sample)
+            if (sample in sample_group) {
+                keep[i] = 1
+                group = sample_group[sample]
+                gsub(/[[:space:]]+/, "_", group)
+                out = out OFS sample
+                class_line = class_line OFS group
+            }
+        }
+        if (class_line == "class") {
+            printf("ERROR: No samples matched between metadata and %s.\n", FILENAME) > "/dev/stderr"
+            exit 1
+        }
+        print out > filtered
+        print class_line > lefse_input
+        next
+    }
+    {
+        out = $1
+        for (i = 2; i <= NF; i++) {
+            if (keep[i]) {
+                out = out OFS $i
+            }
+        }
+        print out > filtered
+        gsub(/;/, "|", out)
+        print out > lefse_input
+    }
+    ' filtered="${filtered_ra}" lefse_input="${lefse_input}" "${metadata_file}" "${merged_ra}"
+
+    echo "${lefse_input} generated"
+}
+
+run_lefse(){
+    local input=$1
+    local result_prefix=$2
+    local result_dir="${output_root}/${result_prefix}"
+    local raw_image_dir="${result_dir}/${result_prefix}_biomarkers_rawImages"
+    local raw_image_count
+    local plot_dpi=600
+
+    mkdir -p "${result_dir}"
+
+    lefse_format_input.py "${input}" "${result_dir}/${result_prefix}.in" -c 1 -o 1000000
+    lefse_run.py "${result_dir}/${result_prefix}.in" "${result_dir}/${result_prefix}.res" -a 0.05 -w 0.05 -l 2 -s 0 --min_c 1
+
+    if [ ! -s "${result_dir}/${result_prefix}.res" ]; then
+        echo "WARNING: ${result_dir}/${result_prefix}.res is empty. No LEfSe result plots will be generated."
+        return
+    fi
+
+    if ! lefse_plot_res.py "${result_dir}/${result_prefix}.res" "${result_dir}/${result_prefix}.png" --dpi "${plot_dpi}" --class_legend_font_size 12 --feature_font_size 5 --max_feature_len 40 --subclades 1; then
+        lefse_plot_res.py "${result_dir}/${result_prefix}.res" "${result_dir}/${result_prefix}.png"
+    fi
+    lefse_plot_res.py "${result_dir}/${result_prefix}.res" "${result_dir}/${result_prefix}.svg" --format svg || true
+    lefse_plot_res.py "${result_dir}/${result_prefix}.res" "${result_dir}/${result_prefix}.pdf" --format pdf || true
+
+    rm -rf "${raw_image_dir}"
+    mkdir -p "${raw_image_dir}"
+    lefse_plot_features.py "${result_dir}/${result_prefix}.in" "${result_dir}/${result_prefix}.res" "${raw_image_dir}/"
+
+    echo "${result_prefix}.res line count: $(wc -l < "${result_dir}/${result_prefix}.res")"
+    if [ -f "${result_dir}/${result_prefix}.png" ]; then
+        echo "LEfSe summary plot generated: ${result_dir}/${result_prefix}.png"
+    else
+        echo "WARNING: LEfSe summary plot was not generated for ${result_prefix}."
+    fi
+    raw_image_count=$(find "${raw_image_dir}" -type f | wc -l)
+    echo "${raw_image_dir} file count: ${raw_image_count}"
+    if [ "${raw_image_count}" -eq 0 ]; then
+        echo "WARNING: No raw feature plots were generated for ${result_prefix}; this usually means no biomarkers passed the LEfSe thresholds."
+    fi
+}
+
+for method_prefix in ${prefix_dada2} ${prefix_unoise3}; do
+    for db in silva gg2; do
+        input_feature_table="${method_prefix}_tab_${db}_pk_filtered.qza"
+        input_taxonomy="${method_prefix}_tax_${db}_pk.qza"
+        result_prefix="${method_prefix}_${db}"
+        lefse_input="${raw_data_dir}/${result_prefix}/${result_prefix}_tabMerge_RA_lefseInput.tsv"
+
+        if [ ! -f "${input_feature_table}" ]; then
+            echo "ERROR: Missing LEfSe input table: ${input_feature_table}" >&2
+            exit 1
+        fi
+        if [ ! -f "${input_taxonomy}" ]; then
+            echo "ERROR: Missing LEfSe taxonomy: ${input_taxonomy}" >&2
+            exit 1
+        fi
+
+        make_lefse_input "${input_feature_table}" "${input_taxonomy}" "${result_prefix}"
+        run_lefse "${lefse_input}" "${result_prefix}"
+    done
+done
+
+exit 0
