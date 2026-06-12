@@ -138,8 +138,8 @@ PICRUSt2, ANCOM and LEfSe are enabled by default. Comment out the corresponding
 - Yue, Z., Fan, Z., Zhang, H. et al. Differential roles of the fish chitinous membrane in gut barrier immunity and digestive compartments. EMBO Rep 24, EMBR202256645 (2023). 
 - McDonald, D., Jiang, Y., Balaban, M. et al. Greengenes2 unifies microbial data in a single reference tree. Nat Biotechnol 42, 715–718 (2024).
 - Douglas, G.M., Maffei, V.J., Zaneveld, J.R. et al. PICRUSt2 for prediction of metagenome functions. Nat Biotechnol 38, 685–688 (2020). 
-- 
-- ## Roadmap
+
+## Roadmap
 
 Planned future improvements:
 
