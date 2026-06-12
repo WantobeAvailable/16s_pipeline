@@ -5,6 +5,7 @@
 This repository provides an integrated 16S rRNA amplicon sequencing analysis pipeline based on QIIME2, USEARCH, SILVA, Greengenes2, LEfSe and PICRUSt2.
 
 It is designed for reproducible microbiome analysis from paired-end FASTQ files to taxonomic profiling, diversity analysis, differential abundance analysis and optional functional prediction.
+
 ## Workflow
 
 ![workflow](docs/integrated_pipeline_flowchart.jpg)
@@ -42,6 +43,7 @@ cd your_repo
 ```
 
 Prepare the input files in `scripts/`. The current runner uses `scripts/` as the
+
 working directory, so the pipeline expects these files there:
 
 ```text
@@ -66,6 +68,7 @@ usearch_command=/path/to/usearch
 ```
 
 The `prefix` must match the input names. For example, if `prefix=test`, the
+
 pipeline expects:
 
 ```text
@@ -74,30 +77,14 @@ scripts/test_manifest.tsv
 ```
 
 The `metadata_file` must contain sample IDs matching the manifest and FASTQ file
+
 prefixes. The column named by `investigate_group` is used for beta diversity,
+
 ANCOM, LEfSe, and optional sample grouping.
 
-Also adjust these dataset-dependent parameters before a formal run:
-
-```text
-min_samples=2
-min_frequency=8
-dada2_sampleDepth=9700
-dada2_sampleDepthTree=9700
-unoise3_sampleDepth=34500
-unoise3_sampleDepthTree=34500
-```
-
-If you want to filter samples by a metadata grouping column before downstream
-diversity and differential-abundance steps, configure:
-
-```text
-data_group_column=
-data_group_where=
-data_group_suffix=grouped
-```
 
 Run the pipeline after activating the required QIIME2/USEARCH/PICRUSt2/LEfSe
+
 environment:
 
 ```bash
@@ -105,6 +92,7 @@ bash scripts/run_integrated_dualdb.batch
 ```
 
 Per-step runtime is recorded in `scripts/integrated_pipeline_timing_*.tsv`.
+
 ## Example Dataset
 
 A lightweight example dataset is provided in the example/ directory for pipeline validation and demonstration.
@@ -124,6 +112,7 @@ Sample metadata, manifest files, and representative analysis results are include
 Optional steps can be turned on or off in `scripts/run_integrated_dualdb.batch`.
 
 To filter samples by a metadata group before rarefaction, diversity analysis,
+
 ANCOM and LEfSe, uncomment:
 
 ```bash
@@ -139,6 +128,7 @@ data_group_suffix=grouped
 ```
 
 PICRUSt2, ANCOM and LEfSe are enabled by default. Comment out the corresponding
+
 `run_step` line in the runner if you do not need one of them.
 
 ## Citation
@@ -159,4 +149,5 @@ Planned future improvements:
 - [ ] Improved input/output directory structure
 
 ## Contact
+
 If you encounter any question during the use of this pipeline, please contact us by email jiangxy263@mail2.sysu.edu.cn
